@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* PawAtelier Editorial Palette */
+    --background: 38 28% 97%;      /* Alabaster Cream #FAF8F5 */
+    --foreground: 214 9% 12%;      /* Charcoal Noir #1C1E21 */
+
+    --card: 0 0% 100%;
+    --card-foreground: 214 9% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 214 9% 12%;
+
+    --primary: 136 14% 19%;        /* Deep Forest Olive #2B382F */
+    --primary-foreground: 38 28% 97%;
+
+    --secondary: 38 18% 92%;       /* Soft Sand #EDE8DE */
+    --secondary-foreground: 136 14% 19%;
+
+    --muted: 38 14% 90%;
+    --muted-foreground: 210 9% 44%;/* Muted Slate #66707A */
+
+    --accent: 15 56% 50%;          /* Terracotta Clay #C55A38 */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 38 18% 87%;          /* Border Stone #E5E0D8 */
+    --input: 38 18% 87%;
+    --ring: 136 14% 19%;
+
+    --radius: 0.75rem;             /* 12px rounded-xl */
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased selection:bg-accent/20 selection:text-accent;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, .font-editorial {
+    font-family: 'Fraunces', 'Playfair Display', Georgia, serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Custom smooth scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
