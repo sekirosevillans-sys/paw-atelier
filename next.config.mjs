@@ -11,6 +11,8 @@ const nextConfig = {
         hostname: 'images.pexels.com',
       },
     ],
+  experimental: {
+    allowedDevOrigins: ["*.trycloudflare.com"],
   },
 };
 
