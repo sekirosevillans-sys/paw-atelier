@@ -2,7 +2,7 @@
 
 Plataforma de comercio electrónico de alta gama para mascotas, diseñada con una estética editorial cálida, orgánica y moderna (Warm Sand, Deep Olive, Terracotta, Rich Black). Desarrollada con estándares de ingeniería de software senior: Next.js 15, TypeScript estricto, Prisma ORM, NextAuth RBAC, pasarela transaccional de pagos y panel administrativo integral.
 
-> 🌐 **Demo en Vivo Funcional**: [https://struck-testimonials-institutes-capitol.trycloudflare.com](https://struck-testimonials-institutes-capitol.trycloudflare.com)  
+> 🌐 **Demo en Vivo Funcional**: [https://pete-amenities-via-conflict.trycloudflare.com](https://pete-amenities-via-conflict.trycloudflare.com)  
 > 📦 **Repositorio GitHub**: [https://github.com/sekirosevillans-sys/paw-atelier](https://github.com/sekirosevillans-sys/paw-atelier)
 
 ---
