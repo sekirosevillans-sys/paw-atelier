@@ -85,20 +85,22 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/70 bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
       {/* Image Gallery Container */}
-      <Link
-        href={`/product/${product.slug}`}
-        className="relative aspect-square w-full overflow-hidden bg-sand-100"
-      >
-        <Image
-          src={mainImage}
-          alt={product.title}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-        />
+      <div className="relative aspect-square w-full overflow-hidden bg-sand-100">
+        <Link
+          href={`/product/${product.slug}`}
+          className="block h-full w-full"
+        >
+          <Image
+            src={mainImage}
+            alt={product.title}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          />
+        </Link>
 
         {/* Badges Overlay */}
-        <div className="absolute left-3 top-3 flex flex-col gap-1.5 z-10">
+        <div className="pointer-events-none absolute left-3 top-3 flex flex-col gap-1.5 z-10">
           <Badge variant={speciesBadge.variant} className="text-[10px] uppercase font-bold tracking-wider">
             {speciesBadge.label}
           </Badge>
@@ -143,7 +145,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </span>
           </button>
         </div>
-      </Link>
+      </div>
 
       {/* Product Information */}
       <div className="flex flex-1 flex-col p-4">

@@ -16,6 +16,11 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,10 +59,35 @@ function LoginForm() {
     }
   };
 
+  if (!isMounted) {
+    return (
+      <div className="w-full max-w-md space-y-6 rounded-3xl border border-border/80 bg-background p-8 shadow-sm">
+        <div className="text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-olive text-white font-editorial font-bold text-xl mb-3">
+            P
+          </div>
+          <h1 className="font-editorial text-2xl font-bold">Acceso Atelier</h1>
+          <p className="mt-1 text-xs text-stone-400">Cargando formulario seguro...</p>
+        </div>
+        <div className="space-y-4 animate-pulse">
+          <div className="h-10 bg-stone-100 rounded-xl" />
+          <div className="h-10 bg-stone-100 rounded-xl" />
+          <div className="h-12 bg-olive/20 rounded-xl" />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full max-w-md space-y-8 rounded-3xl border border-border/80 bg-background p-8 shadow-sm">
-      <div className="text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-olive text-white font-editorial font-bold text-xl mb-3">
+    <div
+      suppressHydrationWarning
+      className="w-full max-w-md space-y-8 rounded-3xl border border-border/80 bg-background p-8 shadow-sm"
+    >
+      <div className="text-center" suppressHydrationWarning>
+        <div
+          suppressHydrationWarning
+          className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-olive text-white font-editorial font-bold text-xl mb-3"
+        >
           P
         </div>
         <h1 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight">
