@@ -129,6 +129,10 @@ export default function CheckoutPage() {
         couponCode: couponApplied?.code || undefined,
         idempotencyKey,
         paymentProvider: "STRIPE",
+        items: items.map((i) => ({
+          variantId: i.variantId,
+          quantity: i.quantity,
+        })),
       };
 
       const res = await fetch("/api/checkout", {

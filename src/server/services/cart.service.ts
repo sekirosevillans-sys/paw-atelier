@@ -3,6 +3,46 @@ import { prisma } from "@/lib/prisma";
 export class CartService {
   async getOrCreateCart(userId?: string, sessionToken?: string) {
     if (userId) {
+      // 1. Si viene también sessionToken, fusionar items del carrito de sesión al de usuario
+      if (sessionToken) {
+        const sessionCart = await prisma.cart.findUnique({
+          where: { sessionToken },
+          include: { items: true },
+        });
+
+        if (sessionCart && sessionCart.items.length > 0) {
+          let userCart = await prisma.cart.findFirst({
+            where: { userId, status: "ACTIVE" },
+            include: { items: true },
+          });
+
+          if (!userCart) {
+            await prisma.cart.update({
+              where: { id: sessionCart.id },
+              data: { userId, sessionToken: null },
+            });
+          } else {
+            for (const sItem of sessionCart.items) {
+              await prisma.cartItem.upsert({
+                where: {
+                  cartId_variantId: {
+                    cartId: userCart.id,
+                    variantId: sItem.variantId,
+                  },
+                },
+                update: { quantity: { increment: sItem.quantity } },
+                create: {
+                  cartId: userCart.id,
+                  variantId: sItem.variantId,
+                  quantity: sItem.quantity,
+                },
+              });
+            }
+            await prisma.cart.delete({ where: { id: sessionCart.id } });
+          }
+        }
+      }
+
       let cart = await prisma.cart.findFirst({
         where: { userId, status: "ACTIVE" },
         include: {

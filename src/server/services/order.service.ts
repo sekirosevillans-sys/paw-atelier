@@ -35,30 +35,109 @@ export class OrderService {
       };
     }
 
-    // 2. Obtener el carrito activo
-    const cart = await prisma.cart.findFirst({
-      where: {
-        OR: [
-          ...(userId ? [{ userId, status: "ACTIVE" }] : []),
-          ...(sessionToken ? [{ sessionToken, status: "ACTIVE" }] : []),
-        ],
-      },
-      include: {
-        items: {
-          include: {
-            variant: {
-              include: {
-                product: {
-                  include: {
-                    images: { where: { isMain: true } },
-                  },
+    // 2. Obtener el carrito activo con resolución inteligente
+    const cartInclude = {
+      items: {
+        include: {
+          variant: {
+            include: {
+              product: {
+                include: {
+                  images: { where: { isMain: true } },
                 },
               },
             },
           },
         },
       },
-    });
+    };
+
+    // Si viene userId y sessionToken, fusionar primero
+    let cart = null;
+    if (userId) {
+      cart = await prisma.cart.findFirst({
+        where: { userId, status: "ACTIVE" },
+        include: cartInclude,
+      });
+    }
+
+    // Si el carrito de usuario no existe o está vacío, verificar carrito de sesión
+    if ((!cart || cart.items.length === 0) && sessionToken) {
+      const sessionCart = await prisma.cart.findUnique({
+        where: { sessionToken },
+        include: cartInclude,
+      });
+
+      if (sessionCart && sessionCart.items.length > 0) {
+        if (userId && cart) {
+          // Fusionar items al carrito de usuario
+          for (const sItem of sessionCart.items) {
+            await prisma.cartItem.upsert({
+              where: {
+                cartId_variantId: {
+                  cartId: cart.id,
+                  variantId: sItem.variantId,
+                },
+              },
+              update: { quantity: { increment: sItem.quantity } },
+              create: {
+                cartId: cart.id,
+                variantId: sItem.variantId,
+                quantity: sItem.quantity,
+              },
+            });
+          }
+          await prisma.cart.delete({ where: { id: sessionCart.id } });
+          cart = await prisma.cart.findUnique({
+            where: { id: cart.id },
+            include: cartInclude,
+          });
+        } else if (userId && !cart) {
+          cart = await prisma.cart.update({
+            where: { id: sessionCart.id },
+            data: { userId, sessionToken: null },
+            include: cartInclude,
+          });
+        } else {
+          cart = sessionCart;
+        }
+      }
+    }
+
+    // Fallback de contingencia: si el cliente envió items del carrito en el payload de checkout
+    if ((!cart || cart.items.length === 0) && input.items && input.items.length > 0) {
+      const targetCart =
+        cart ||
+        (await prisma.cart.create({
+          data: {
+            userId: userId || null,
+            sessionToken: sessionToken || null,
+            status: "ACTIVE",
+          },
+        }));
+
+      for (const reqItem of input.items) {
+        await prisma.cartItem.upsert({
+          where: {
+            cartId_variantId: {
+              cartId: targetCart.id,
+              variantId: reqItem.variantId,
+            },
+          },
+          create: {
+            cartId: targetCart.id,
+            variantId: reqItem.variantId,
+            quantity: reqItem.quantity,
+          },
+          update: { quantity: reqItem.quantity },
+        });
+      }
+
+      cart = await prisma.cart.findUnique({
+        where: { id: targetCart.id },
+        include: cartInclude,
+      });
+    }
 
     if (!cart || cart.items.length === 0) {
       throw new Error("CARRITO_VACIO: No hay productos en el carrito para procesar.");

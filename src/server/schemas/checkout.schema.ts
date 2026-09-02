@@ -11,6 +11,11 @@ export const shippingAddressSchema = z.object({
   phone: z.string().min(7, "El teléfono es requerido para la entrega").max(25),
 });
 
+export const checkoutItemSchema = z.object({
+  variantId: z.string().min(1),
+  quantity: z.number().int().min(1),
+});
+
 export const checkoutSchema = z.object({
   email: z.string().email("Ingresa un correo electrónico válido"),
   shippingAddress: shippingAddressSchema,
@@ -19,6 +24,7 @@ export const checkoutSchema = z.object({
   idempotencyKey: z.string().min(10, "Clave de idempotencia requerida"),
   paymentProvider: z.enum(["STRIPE", "STRIPE_TEST_SIMULATOR"]).default("STRIPE"),
   notes: z.string().max(300).optional(),
+  items: z.array(checkoutItemSchema).optional(),
 });
 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
